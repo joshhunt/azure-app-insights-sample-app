@@ -28,7 +28,7 @@ function request() {
     0.5
   );
 
-  const delay = Math.floor(1000 / requestPerSecond + random(-50, 50));
+  const delay = Math.floor(1000 / requestPerSecond + random(-10, 10));
 
   console.log(
     "Targeting",
