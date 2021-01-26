@@ -57,7 +57,7 @@ app.get("/github/:owner/:repo/commits", (req, res, next) => {
     ? `${req.params.repo}-repo-that-doesnt-exist`
     : req.params.repo;
 
-  wait(random(100, 1000))
+  wait(random(0, 100))
     .then(() =>
       octokit.request("GET /repos/{owner}/{repo}/commits", {
         owner: req.params.owner,
