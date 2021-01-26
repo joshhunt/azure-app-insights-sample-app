@@ -7,13 +7,41 @@ const random = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 // 5000 req/hour
 // ~1.38 req/second
 
-function request() {
-  const delay = random(500, 1000);
+const MAX_REQUESTS_PER_SECOND = 1.2;
 
-  console.log("waiting", delay, "ms");
+function curve(x) {
+  return (Math.sin(2 * Math.PI * (x - 1 / 4)) + 1) / 2;
+}
+
+function getCurrentSecond() {
+  const now = new Date();
+  return now.getSeconds() + 60 * now.getMinutes() + 60 * 60 * now.getHours();
+}
+
+const DAY_IN_SECONDS = 86400;
+
+function request() {
+  const currentSeconds = getCurrentSecond();
+  const dayProgress = currentSeconds / DAY_IN_SECONDS;
+  const requestPerSecond = Math.max(
+    MAX_REQUESTS_PER_SECOND * curve(dayProgress),
+    0.5
+  );
+
+  const delay = Math.floor(1000 / requestPerSecond + random(-50, 50));
+
+  console.log(
+    "Targeting",
+    requestPerSecond,
+    "requests per second, delay",
+    delay,
+    "ms"
+  );
+
   setTimeout(() => {
-    console.log("requesting...");
-    axios.get("http://localhost:3001/github/grafana/grafana/commits");
+    axios
+      .get("http://localhost:3001/github/grafana/grafana/commits")
+      .catch((err) => console.error("Request error:", err.message));
 
     request();
   }, delay);
