@@ -23,10 +23,11 @@ const DAY_IN_SECONDS = 86400;
 function request() {
   const currentSeconds = getCurrentSecond();
   const dayProgress = currentSeconds / DAY_IN_SECONDS;
-  const requestPerSecond = Math.max(
-    MAX_REQUESTS_PER_SECOND * curve(dayProgress),
-    0.5
-  );
+
+  const requestPerSecond =
+    // The traffic curve will be half the limit, with the other half being the "floor"
+    (MAX_REQUESTS_PER_SECOND / 2) * curve(dayProgress) +
+    MAX_REQUESTS_PER_SECOND / 2;
 
   const delay = Math.floor(1000 / requestPerSecond + random(-10, 10));
 
